@@ -46,11 +46,15 @@ export const DonationForm: React.FC<{ contractId: string }> = ({ contractId }) =
       setAmount('');
       setShowSuccess(true);
       
-      // Update real data with slight lag for ledger finality
+      // Tx is already confirmed — refresh balance & campaign state immediately
+      await updateBalance();
+      await refetch();
+
+      // One more refresh after 2s to catch any ledger propagation lag
       setTimeout(async () => {
-        await updateBalance(); // Update user's wallet balance
-        await refetch();      // Fetch real contract state
-      }, 5000);
+        await updateBalance();
+        await refetch();
+      }, 2000);
       
     } catch (e: any) {
       toast.error(e.message || 'Transaction failed or rejected');

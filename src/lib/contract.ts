@@ -74,7 +74,7 @@ export async function getCampaign(): Promise<Campaign | null> {
 export async function donateToCampaign(
   donorAddress: string,
   amountXLM: string
-): Promise<{ hash: string }> {
+): Promise<{ hash: string; ledger: number }> {
   const server = new StellarSdk.rpc.Server(RPC_URL);
   const contract = new StellarSdk.Contract(CONTRACT_ID);
   const amountStroops = BigInt(Math.floor(parseFloat(amountXLM) * 10_000_000));
@@ -123,12 +123,12 @@ export async function donateToCampaign(
     throw new Error('Transaction failed: ' + JSON.stringify(result.errorResult));
   }
 
-  // Poll for completion
+  // Poll for confirmation — check every 1s, up to 20s
   let response = await server.getTransaction(result.hash);
   let retries = 0;
   while (
     response.status === StellarSdk.rpc.Api.GetTransactionStatus.NOT_FOUND &&
-    retries < 10
+    retries < 20
   ) {
     await new Promise((r) => setTimeout(r, 1000));
     response = await server.getTransaction(result.hash);
@@ -139,25 +139,35 @@ export async function donateToCampaign(
     throw new Error('Transaction failed on-chain');
   }
 
-  return { hash: result.hash };
+  // Return hash plus the ledger the tx landed in so callers can refresh quickly
+  return { hash: result.hash, ledger: (response as any).ledger ?? 0 };
 }
 
 export async function getTransactionHistory(): Promise<HistoryItem[]> {
   if (!CONTRACT_ID) return [];
   try {
     const server = new StellarSdk.rpc.Server(RPC_URL);
-    
-    // Fetch Soroban events for the contract
-    // We look for events with the 'donate' topic
+
+    // startLedger: 0 causes a "Bad Request" from the RPC server.
+    // Fetch the latest ledger and look back ~1000 ledgers (~83 minutes).
+    let startLedger = 1;
+    try {
+      const ledgerInfo = await server.getLatestLedger();
+      startLedger = Math.max(1, ledgerInfo.sequence - 1000);
+    } catch (_) {
+      // If we can't get the latest ledger, fall back to a safe low number
+      startLedger = 1;
+    }
+
     const eventsResponse = await server.getEvents({
-      startLedger: 0,
+      startLedger,
       filters: [
         {
           type: 'contract',
           contractIds: [CONTRACT_ID!],
         }
       ],
-      limit: 20
+      limit: 20,
     });
 
     console.log('Contract events fetched:', eventsResponse.events.length);
@@ -166,17 +176,17 @@ export async function getTransactionHistory(): Promise<HistoryItem[]> {
       .map(event => {
         try {
           const topics = event.topic.map(t => StellarSdk.scValToNative(t));
-          if (topics[0] !== 'donate') return null; // We only care about donate events
-          
+          if (topics[0] !== 'donate') return null;
+
           const amountValue = StellarSdk.scValToNative(event.value);
           const fromAddr = topics[1]?.toString() || 'Unknown';
-          
+
           return {
             id: event.id,
             from: fromAddr.length > 10 ? fromAddr.slice(0, 6) + '...' + fromAddr.slice(-6) : fromAddr,
             amount: formatStroopsToXLM(BigInt(amountValue?.toString() || '0')),
             ledger: event.ledger,
-            createdAt: event.ledgerClosedAt || new Date().toISOString()
+            createdAt: event.ledgerClosedAt || new Date().toISOString(),
           };
         } catch (err) {
           console.error('Event parse error:', err);
