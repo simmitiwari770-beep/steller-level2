@@ -19,6 +19,19 @@ const nextConfig: NextConfig = {
       process.env.NEXT_PUBLIC_NETWORK_PASSPHRASE ||
       "Test SDF Network ; September 2015",
   },
+  // SEP-0001: Allow wallets (Freighter, etc.) to fetch stellar.toml via CORS
+  async headers() {
+    return [
+      {
+        source: "/.well-known/stellar.toml",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET" },
+          { key: "Content-Type", value: "text/plain" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
