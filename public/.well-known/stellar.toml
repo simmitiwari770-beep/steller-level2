@@ -1,14 +1,25 @@
-# GlobalGrant Stellar DApp - SEP-0001 stellar.toml
 # https://stellar.org/protocol/sep-1
+# SEP-0001 stellar.toml for GlobalGrant DApp
+
+VERSION="2.0.0"
+
+NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+ACCOUNTS=[]
+SIGNING_KEY=""
 
 [DOCUMENTATION]
 ORG_NAME="GlobalGrant"
-ORG_DESCRIPTION="Decentralized crowdfunding platform on Stellar Soroban"
+ORG_DESCRIPTION="Decentralized crowdfunding platform built on Stellar Soroban"
 ORG_URL="https://steller-level2.vercel.app"
+ORG_LOGO="https://steller-level2.vercel.app/grant_banner.png"
+ORG_OFFICIAL_EMAIL=""
 
-[[ACCOUNTS]]
-# Testnet contract
-CONTRACT_ID="CBDWWMTVIXTKNGZSO7C75RQC77PN4ZOXEMU5SJCYHCJ4CZ554HKXFHN7"
+[[CURRENCIES]]
+code="XLM"
+is_asset_anchored=false
+desc="Native Stellar Lumens used for crowdfunding donations"
 
-[NETWORK]
-NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+[[VALIDATORS]]
+
+[CONTRACTS]
+CROWDFUNDING="CBDWWMTVIXTKNGZSO7C75RQC77PN4ZOXEMU5SJCYHCJ4CZ554HKXFHN7"
