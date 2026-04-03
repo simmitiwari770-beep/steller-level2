@@ -135,17 +135,21 @@ steller-level2/
 ## 📸 Screenshots
 
 ### 1. Wallet Options Available
-![Wallet Options](/screenshots/wallet_options.png)
 *Multi-wallet support: Freighter, Albedo, Rabet, Hana Wallet, and LOBSTR via Stellar Wallets Kit.*
+<img width="1440" height="900" alt="Screenshot 2026-04-03 at 1 07 10 PM" src="https://github.com/user-attachments/assets/719b4e27-0a25-4b8e-b28f-3027c2cc0ef7" />
+tions.png)
+
 
 ### 2. Wallet Connected & Balance
-![Wallet Connected](/screenshots/wallet_connected.png)
 *Connected wallet showing truncated address and real-time XLM balance alongside campaign stats.*
+<img width="1432" height="859" alt="Screenshot 2026-04-03 at 1 08 03 PM" src="https://github.com/user-attachments/assets/4c85accd-be92-4958-adab-62a58acbf502" />
+
 
 ### 3. Successful Transaction
-![Transaction Success](/screenshots/transaction_success.png)
 *Donation confirmed on-chain with blockchain reference hash and a link to verify on Stellar Expert.*
 
----
+<img width="1431" height="865" alt="Screenshot 2026-04-03 at 1 09 23 PM" src="https://github.com/user-attachments/assets/ff79e418-41e4-4c2a-8ac0-de8bbb3f7956" />
 
-Built with ❤️ for the Stellar Developer Community.
+<img width="1438" height="859" alt="Screenshot 2026-04-03 at 1 10 19 PM" src="https://github.com/user-attachments/assets/164ea393-8793-47f3-8a35-f2e20e075848" />
+
+
